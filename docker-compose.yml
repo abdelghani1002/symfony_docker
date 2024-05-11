@@ -1,0 +1,38 @@
+services:
+  db:
+    image: mariadb
+    container_name: db_myapp
+    restart: on-failure
+    volumes:
+      - db-data:/var/lib/mysql
+    environment:
+      MARIADB_ALLOW_EMPTY_ROOT_PASSWORD: 'yes'
+    networks:
+      - dev
+
+  web:
+    build: docker
+    container_name: nginx_myapp
+    restart: on-failure
+    ports:
+      - "8000:80"
+    volumes:
+      - ./docker/nginx:/etc/nginx/conf.d
+      - ./:/var/www
+    networks:
+      - dev
+  
+  php:
+    image: php:8.2-fpm-alpine
+    container_name: phpfpm_myapp
+    restart: on-failure
+    expose:
+      - 9000
+    networks:
+      - dev
+
+networks:
+  dev:
+
+volumes:
+  db-data:
